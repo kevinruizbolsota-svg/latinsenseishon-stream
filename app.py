@@ -1,15 +1,15 @@
 """
 LATINSENSEISHON — CLOUD RUNNER MOTOR 24/7 (RENDER DOCKER)
-Emite Superman 1941 (Dominio Público) a Twitch y Kick.
+Emite a Twitch y Kick con compatibilidad estricta HLS / Twitch Ingest.
 """
 
 import os, time, subprocess, threading, sys
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_file
 from datetime import datetime
 
 app = Flask(__name__)
 
-Ttwitch_rtmp = f"rtmp://live.twitch.tv/app/{TWITCH_KEY}"
+TWITCH_KEY = os.getenv("TWITCH_STREAM_KEY", "live_851574809_4d9Yt5LRXhlGi1NMUmYuC1JIj97REN").strip()
 KICK_KEY   = os.getenv("KICK_STREAM_KEY",   "sk_us-west-2_OmepOf8fu8i6_KBoStM2ArcXUnnwXhDeyew4jBBoiYs").strip()
 
 FUENTES = [
@@ -33,7 +33,7 @@ def log(msg):
     ESTADO["ultima_actividad"] = f"[{ts}] {msg}"
 
 def build_ffmpeg_cmd(source_url):
-    twitch_rtmp = f"rtmps://ingest.global-contribute.live-video.net:443/app/{TWITCH_KEY}"
+    twitch_rtmp = f"rtmp://live.twitch.tv/app/{TWITCH_KEY}"
     kick_rtmp   = f"rtmps://fa723fc1b171.global-contribute.live-video.net:443/app/{KICK_KEY}"
     
     tee_target = f"[f=flv:onfail=ignore]{twitch_rtmp}|[f=flv:onfail=ignore]{kick_rtmp}"
@@ -43,14 +43,17 @@ def build_ffmpeg_cmd(source_url):
         "-re",
         "-stream_loop", "-1",
         "-i", source_url,
+        "-vf", "scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,format=yuv420p",
         "-c:v", "libx264",
         "-preset", "veryfast",
-        "-tune", "zerolatency",
-        "-b:v", "1800k",
+        "-profile:v", "main",
+        "-b:v", "2000k",
         "-maxrate", "2000k",
         "-bufsize", "4000k",
-        "-pix_fmt", "yuv420p",
         "-g", "60",
+        "-keyint_min", "60",
+        "-sc_threshold", "0",
+        "-r", "30",
         "-c:a", "aac",
         "-b:a", "128k",
         "-ar", "44100",
@@ -100,6 +103,10 @@ def motor_stream_loop():
         time.sleep(5)
 
 @app.route("/", methods=["GET"])
+def dashboard():
+    return send_file("index.html")
+
+@app.route("/api/status", methods=["GET"])
 @app.route("/healthz", methods=["GET"])
 def health():
     return jsonify({
