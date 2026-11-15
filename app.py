@@ -213,6 +213,21 @@ def toggle_stream():
                     pass
     return jsonify({"status": "ok", "activo": TRANSMITIENDO_ACTIVO, "estado": ESTADO})
 
+
+@app.route('/api/manifest')
+def serve_manifest():
+    p = os.path.join(app.static_folder, 'MASTER_ECOSYSTEM_MANIFEST.md')
+    if os.path.exists(p):
+        return send_file(p, mimetype='text/markdown')
+    return jsonify({'error': 'Manifiesto no encontrado'}), 404
+
+@app.route('/api/backup/download')
+def download_backup_zip():
+    p = os.path.join(app.static_folder, 'BACKUP_ECOSISTEMA_KRC.zip')
+    if os.path.exists(p):
+        return send_file(p, as_attachment=True, download_name='BACKUP_ECOSISTEMA_KRC.zip')
+    return jsonify({'error': 'Backup zip no encontrado'}), 404
+
 if __name__ == "__main__":
     t_keepalive = threading.Thread(target=keep_alive_daemon, daemon=True)
     t_keepalive.start()
