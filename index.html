@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LOS CALLE TV — Master Control & Central de Transmisión 24/7</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #090a0f;
+            --surface: #12141e;
+            --surface-hover: #1a1e2d;
+            --border: #232738;
+            --accent-cyan: #00f2fe;
+            --accent-purple: #9d4edd;
+            --accent-green: #00e676;
+            --accent-yellow: #ffb703;
+            --text-main: #f0f2f5;
+            --text-muted: #8b92a5;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text-main);
+            font-family: 'Space Grotesk', sans-serif;
+            min-height: 100vh;
+            padding: 24px;
+            background-image: 
+                radial-gradient(ellipse at 20% 10%, rgba(157, 78, 221, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(0, 242, 254, 0.12) 0%, transparent 50%);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 32px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .badge-live {
+            background: #ff0055;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            animation: pulse 1.8s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 0, 85, 0.6); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 0, 85, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 0, 85, 0); }
+        }
+
+        .title {
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #fff, var(--text-muted));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .indicators {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .pill {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            box-shadow: 0 0 8px var(--accent-green);
+        }
+
+        /* Main Grid */
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        @media (max-width: 1024px) {
+            .grid-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 12px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--accent-cyan);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* On Air Banner */
+        .on-air-banner {
+            background: linear-gradient(135deg, rgba(157, 78, 221, 0.2), rgba(0, 242, 254, 0.1));
+            border: 1px solid rgba(0, 242, 254, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .on-air-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--accent-yellow);
+            margin-bottom: 6px;
+            font-weight: 700;
+        }
+
+        .on-air-show {
+            font-size: 22px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .on-air-desc {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-box {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .stat-val {
+            font-size: 18px;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        /* Programming Schedule Table */
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .schedule-table th {
+            text-align: left;
+            padding: 12px;
+            color: var(--text-muted);
+            font-weight: 600;
+            border-bottom: 1px solid var(--border);
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .schedule-table td {
+            padding: 14px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .schedule-table tr:hover {
+            background: var(--surface-hover);
+        }
+
+        .active-row {
+            background: rgba(0, 242, 254, 0.08) !important;
+            border-left: 3px solid var(--accent-cyan);
+        }
+
+        .time-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            background: rgba(255, 255, 255, 0.06);
+            padding: 4px 8px;
+            border-radius: 4px;
+            color: var(--accent-cyan);
+        }
+
+        /* Engineering Study Accordion */
+        .study-box {
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border-left: 3px solid var(--accent-purple);
+        }
+
+        .study-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+
+        .study-text {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .tag-pill {
+            display: inline-block;
+            background: rgba(157, 78, 221, 0.2);
+            color: var(--accent-purple);
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-top: 6px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .footer {
+            text-align: center;
+            padding-top: 32px;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 13px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        a {
+            color: var(--accent-cyan);
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="brand">
+            <span class="badge-live">EN VIVO 24/7</span>
+            <div class="title">LOS CALLE TV — MASTER CONTROL</div>
+        </div>
+        <div class="indicators">
+            <div class="pill">
+                <div class="dot"></div>
+                <span>TWITCH: <strong style="color: #9d4edd;">los_calle_tv</strong></span>
+            </div>
+            <div class="pill">
+                <div class="dot"></div>
+                <span>KICK: <strong style="color: #00e676;">los-calle-tv</strong></span>
+            </div>
+            <div class="pill">
+                <div class="dot"></div>
+                <span>ANTI-SLEEP: <strong id="heartbeat-status">ACTIVO (24/7)</strong></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Status Banner -->
+    <div class="on-air-banner">
+        <div class="on-air-tag">🔴 TRANSMITIENDO EN ESTE MOMENTO (PASSTHROUGH 1.0X)</div>
+        <div class="on-air-show" id="current-show">Nezha Conquista al Rey Dragón (1979) — Joya Cultural de Oro</div>
+        <div class="on-air-desc">
+            La obra cumbre de la animación tradicional. Narra la leyenda del joven Nezha y su sacrificio épico para proteger a su pueblo de los Reyes Dragón. Transmisión nativa H.264/AAC sin recodificación en la nube de Render con PC 100% apagado.
+        </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="grid-layout">
+        <!-- Left: Telemetria & Programacion -->
+        <div>
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-label">Velocidad de Flujo</div>
+                    <div class="stat-val" id="stat-speed">1.01x (Perfecto)</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Consumo de CPU</div>
+                    <div class="stat-val" style="color: var(--accent-green);">0.0% (Zero-Lag)</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Latencia de Red</div>
+                    <div class="stat-val">0 ms (Caché SSD Local)</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Modo Operativo</div>
+                    <div class="stat-val" style="font-size: 14px; color: var(--accent-cyan);">ANTI_SLEEP_24_7</div>
+                </div>
+            </div>
+
+            <!-- Master Schedule Grid -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">📅 PARRILLA MAESTRA DE PROGRAMACIÓN (ESTRUCTURA DE ORO 24H)</div>
+                    <span style="font-size: 12px; color: var(--text-muted); font-family: 'JetBrains Mono';">ROTACIÓN CIENTÍFICA</span>
+                </div>
+
+                <table class="schedule-table">
+                    <thead>
+                        <tr>
+                            <th>Franja</th>
+                            <th>Horario</th>
+                            <th>Serie / Bloque</th>
+                            <th>Estrategia Psicológica</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="active-row">
+                            <td><span class="time-badge">FRANJA 1</span></td>
+                            <td><strong>06:00 - 09:00</strong> (3 Horas)</td>
+                            <td><strong>Nezha Conquista al Rey Dragón (1979)</strong></td>
+                            <td>Arte tradicional y leyendas épicas. Estimulación matutina.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="time-badge">FRANJA 2</span></td>
+                            <td><strong>09:00 - 12:00</strong> (3 Horas)</td>
+                            <td><strong>Popeye El Marino (Fleischer Studios)</strong></td>
+                            <td>Comedia rápida y dinamismo nostálgico familiar.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="time-badge">FRANJA 3</span></td>
+                            <td><strong>12:00 - 15:00</strong> (3 Horas)</td>
+                            <td><strong>El Chavo del 8 — Clásicos de Oro del Barrio</strong></td>
+                            <td>Franja almuerzo: máxima cercanía y humor comunitario hispano.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="time-badge">FRANJA 4</span></td>
+                            <td><strong>15:00 - 18:00</strong> (3 Horas)</td>
+                            <td><strong>Superman (1941) — Serie Completa Restaurada</strong></td>
+                            <td>Tarde de aventuras de superhéroes de la era dorada.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="time-badge">FRANJA 5</span></td>
+                            <td><strong>18:00 - 21:00</strong> (3 Horas)</td>
+                            <td><strong>Dragon Ball / Anime Retrospectiva</strong></td>
+                            <td>Prime Time: Máximo pico de audiencia en Twitch y Kick.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="time-badge">FRANJA 6</span></td>
+                            <td><strong>21:00 - 00:00</strong> (3 Horas)</td>
+                            <td><strong>Grandes Obras de la Animación Mundial</strong></td>
+                            <td>Maratón nocturno de joyas y largometrajes cinematográficos.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="time-badge">FRANJA 7</span></td>
+                            <td><strong>00:00 - 03:00</strong> (3 Horas)</td>
+                            <td><strong>Noche Lo-Fi / Series de Culto (Bloque Bizarro)</strong></td>
+                            <td>Formato tipo Adult Swim: contenido hipnótico para noctámbulos.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="time-badge">FRANJA 8</span></td>
+                            <td><strong>03:00 - 06:00</strong> (3 Horas)</td>
+                            <td><strong>Ciclo de Repetición / Descanso Visual</strong></td>
+                            <td>"Sleep Streamers": televidentes que duermen con la tele encendida.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Right: Ingenieria de Televisión & Cola -->
+        <div>
+            <!-- TV Science Card -->
+            <div class="card" style="margin-bottom: 24px;">
+                <div class="card-header">
+                    <div class="card-title">🧠 INGENIERÍA DE AUDIENCIAS (ESTUDIO TV)</div>
+                </div>
+
+                <div class="study-box">
+                    <div class="study-title">1. ¿Por qué bloques de 3 Horas y no de 6?</div>
+                    <div class="study-text">
+                        En plataformas en vivo (Twitch/Kick), bloques de 6 horas saturan al espectador. Si a un usuario no le gusta la serie emitida, se va y no regresa en 6 horas. La regla de <strong>bloques de 3 horas</strong> (estilo Cartoon Network/Toonami) permite rotar 8 series al día, maximizando la retención constante y la frescura.
+                    </div>
+                    <span class="tag-pill">REGLA: BINGE CATCHING (3H)</span>
+                </div>
+
+                <div class="study-box">
+                    <div class="study-title">2. La Fórmula 90/10 de Publicidad</div>
+                    <div class="study-text">
+                        La TV tradicional usa 22 min de show + 8 min de anuncios. En LOS CALLE TV usamos la regla <strong>90/10</strong>: 50 minutos de transmisión continua seguidos de 3 minutos de bumpers vintage y promoción de Remember Luxury / Redes. Otorga autenticidad de canal de cable sin cansar al televidente.
+                    </div>
+                    <span class="tag-pill">RETENCIÓN: 90% SERIE / 10% BUMPER</span>
+                </div>
+
+                <div class="study-box">
+                    <div class="study-title">3. Dayparting Biológico</div>
+                    <div class="study-text">
+                        Las grandes cadenas programan de acuerdo al biorritmo: humor ligero a mediodía, épica y acción en Prime Time (18:00 a 22:00) y misterio/lo-fi en la madrugada.
+                    </div>
+                    <span class="tag-pill">PSICOLOGÍA BIOLÓGICA</span>
+                </div>
+            </div>
+
+            <!-- Up Next Queue Card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">📂 COLA DE SERIES LISTAS EN DISCO</div>
+                </div>
+                
+                <div style="font-size: 13px; line-height: 2;">
+                    <div>🟢 <strong>01_EN_EMISION:</strong> Nezha Conquista al Rey Dragón (1979)</div>
+                    <div>🟡 <strong>02_PROXIMA:</strong> El Chavo del 8 — Clásicos del Barrio</div>
+                    <div>🟡 <strong>03_PROXIMA:</strong> Popeye El Marino (1957)</div>
+                    <div>⚪ <strong>04_HISTORIAL:</strong> Superman (1941) Colección Completa</div>
+                    <div>🟣 <strong>05_BUMPERS:</strong> Propagandas KRC & Cortinillas 90s</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        LOS CALLE TV © 2026 — MOTOR CLOUD RUNNER LATINSENSEISHON 24/7 | INDEPENDIENTE & AUTÓNOMO
+    </div>
+</div>
+
+<script>
+    // Consulta en tiempo real de telemetria al backend
+    async function updateStatus() {
+        try {
+            const res = await fetch('/healthz');
+            const data = await res.json();
+            if (data && data.estado) {
+                if (data.estado.ultima_actividad) {
+                    const act = data.estado.ultima_actividad;
+                    if (act.includes('speed=')) {
+                        const speed = act.split('speed=')[1].split('x')[0].trim();
+                        document.getElementById('stat-speed').innerText = speed + 'x (Óptimo)';
+                    }
+                }
+            }
+        } catch (e) {
+            console.log('Error actualizando estado:', e);
+        }
+    }
+    setInterval(updateStatus, 5000);
+    updateStatus();
+</script>
+
+</body>
+</html>
