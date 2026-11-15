@@ -9,7 +9,7 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-TWITCH_KEY = os.getenv("TWITCH_STREAM_KEY", "live_851574809_cckGIiMFJwCTm8Ce5NFfjm4CRkWN8m").strip()
+Ttwitch_rtmp = f"rtmp://live.twitch.tv/app/{TWITCH_KEY}"
 KICK_KEY   = os.getenv("KICK_STREAM_KEY",   "sk_us-west-2_OmepOf8fu8i6_KBoStM2ArcXUnnwXhDeyew4jBBoiYs").strip()
 
 FUENTES = [
