@@ -33,7 +33,7 @@ def log(msg):
     ESTADO["ultima_actividad"] = f"[{ts}] {msg}"
 
 def build_ffmpeg_cmd(source_url):
-    twitch_rtmp = f"rtmp://ingest.global-contribute.live-video.net/app/{TWITCH_KEY}"
+    twitch_rtmp = f"rtmps://ingest.global-contribute.live-video.net:443/app/{TWITCH_KEY}"
     kick_rtmp   = f"rtmps://fa723fc1b171.global-contribute.live-video.net:443/app/{KICK_KEY}"
     
     tee_target = f"[f=flv:onfail=ignore]{twitch_rtmp}|[f=flv:onfail=ignore]{kick_rtmp}"
