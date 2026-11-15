@@ -221,12 +221,29 @@ def serve_manifest():
         return send_file(p, mimetype='text/markdown')
     return jsonify({'error': 'Manifiesto no encontrado'}), 404
 
+@app.route('/api/backup/download/<tipo>')
+def download_backup_modular(tipo):
+    backups_dir = os.path.join(app.static_folder, 'backups')
+    files_map = {
+        'core': ('KRC_CODE_CORE_MASTER.zip', 'KRC_CODIGO_Y_SCRIPTS_COMPLETO.zip'),
+        'assets': ('KRC_BRANDING_ASSETS.zip', 'KRC_LOGOS_Y_OVERLAYS.zip'),
+        'n8n': ('KRC_N8N_AUTOMATION.zip', 'KRC_N8N_FLUJOS_AUTOMATIZACION.zip'),
+        'full': ('KRC_CODE_CORE_MASTER.zip', 'KRC_BACKUP_ECOSISTEMA.zip')
+    }
+    if tipo in files_map:
+        fname, dl_name = files_map[tipo]
+        p = os.path.join(backups_dir, fname)
+        if os.path.exists(p):
+            return send_file(p, as_attachment=True, download_name=dl_name)
+    # Fallback al zip principal si existe
+    legacy_zip = os.path.join(app.static_folder, 'BACKUP_ECOSISTEMA_KRC.zip')
+    if os.path.exists(legacy_zip):
+        return send_file(legacy_zip, as_attachment=True, download_name='BACKUP_ECOSISTEMA_KRC.zip')
+    return jsonify({'error': 'Archivo de backup no disponible'}), 404
+
 @app.route('/api/backup/download')
 def download_backup_zip():
-    p = os.path.join(app.static_folder, 'BACKUP_ECOSISTEMA_KRC.zip')
-    if os.path.exists(p):
-        return send_file(p, as_attachment=True, download_name='BACKUP_ECOSISTEMA_KRC.zip')
-    return jsonify({'error': 'Backup zip no encontrado'}), 404
+    return download_backup_modular('core')
 
 if __name__ == "__main__":
     t_keepalive = threading.Thread(target=keep_alive_daemon, daemon=True)
